@@ -40,7 +40,12 @@ var restoreContent = function(content){
 // Resets our view to the norm.
 var resetView = function() {
   // If a Youtube player is active, make sure we stop it.
-  if (player){ player.stopVideo(); }
+  if (player === 'undefined' || !player) {
+    console.log("Player could not be found.");
+  } else {
+    player.stopVideo();
+    player.destroy();
+  }
   // If the player's ended, make sure we destroy it.
   v1.css('width','50%');
   v2.css('width','50%');
@@ -78,18 +83,42 @@ firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
 //  after the API code downloads.
 var player;
 
+// When our firstview button is clicked, init a video and get it ready to roll fullscreen.
 $('#vidPlayer1').on('click', function(){
   player = new YT.Player('player', {
     height: '100%',
     width: '100%',
     videoId: '-3WWLzNTmOw',
     controls: 0,
+    showinfo: 0,
+    autoplay: 0,
+    rel: 0,
     events: {
       'onReady': onPlayerReady,
       'onStateChange': onPlayerStateChange
     }
   });
+  // Make sure we hide view content.
   hideContent(v1c);
+});
+
+// When our secondview button is clicked, init a video and get it ready to roll fullscreen.
+$('#vidPlayer2').on('click', function(){
+  player = new YT.Player('player', {
+    height: '100%',
+    width: '100%',
+    videoId: 'zb5Sqh6YJeY',
+    controls: 0,
+    showinfo: 0,
+    autoplay: 0,
+    rel: 0,
+    events: {
+      'onReady': onPlayerReady,
+      'onStateChange': onPlayerStateChange
+    }
+  });
+  // Make sure we hide view content.
+  hideContent(v2c);
 });
 // function onYouTubeIframeAPIReady() {
 //   player = new YT.Player('player', {
@@ -118,7 +147,7 @@ function onPlayerStateChange(event) {
     done = true;
   }
   if (event.data == YT.PlayerState.ENDED) {
-    event.target.destroy();
+    resetView();
   }
 }
 function stopVideo() {
